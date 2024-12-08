@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 
 class MyBST {
+
     public class Node {
         PeopleRecord data;
         Node left, right;
@@ -17,16 +18,19 @@ class MyBST {
     public Node getRoot(){
         return root;
     }
+
     public void insert(PeopleRecord record) {
         root = insertRec(root, record);
     }
 
+    //recursive helper function
     private Node insertRec(Node root, PeopleRecord record) {
+        //if the tree is empty just insert new node as a root
         if (root == null) {
             root = new Node(record);
             return root;
         }
-
+        //if the value is smaller insert in the left side, if bigger to the right side
         if (record.compareTo(root.data) < 0) {
             root.left = insertRec(root.left, record);
         } else {
@@ -40,7 +44,7 @@ class MyBST {
         return "Number of nodes: " + nodeCount + ", Height: " + height;
     }
 
-    // Helper method to count nodes
+    // Recursively count every node from left and right side
     private int getNodeCount(Node root) {
         if (root == null) {
             return 0;
@@ -53,6 +57,7 @@ class MyBST {
         if (root == null) {
             return 0;
         }
+        //get the maximum value of height
         int leftHeight = getHeight(root.left);
         int rightHeight = getHeight(root.right);
         return 1 + Math.max(leftHeight, rightHeight);
@@ -67,7 +72,7 @@ class MyBST {
             return null; // Base case: not found
         }
 
-        // Combine family name and given name for comparison (you can adjust the logic if needed)
+        // Combine family name and given name for comparison, cause we can not create an PeopleRecord object from just 2 fields
         String searchKey = givenName+familyName ;
         String currentKey = root.data.getGivenName()+root.data.getFamilyName() ;
 
@@ -83,7 +88,7 @@ class MyBST {
     public void drawTree() {
         JFrame frame = new JFrame("Binary Search Tree Visualization");
         //close the frame
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setSize(800, 600);
 
         JPanel panel = new JPanel() {
@@ -129,6 +134,7 @@ class MyBST {
         }
     }
 
+    // I wrote this to temporarily test my BST
     public void inorderTraversal() {
         inorderRec(root);
     }

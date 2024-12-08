@@ -1,108 +1,134 @@
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
+import java.util.PriorityQueue;
 
-class MyHeap {
-    private ArrayList<Node> heap;
+public class MyHeap {
 
-    private class Node {
-        PeopleRecord data;
+    // Worst case complexity, insert, delete O(logn), heapify O(n)
 
-        Node(PeopleRecord data) {
-            this.data = data;
+    private PeopleRecord[] heap; // Array to store the heap elements
+    private int size;           // Number of elements in the heap
+    private final int capacity; // Maximum capacity of the heap
+
+    public MyHeap(int capacity) {
+        this.capacity = capacity;
+        this.heap = new PeopleRecord[capacity];
+        this.size = 0;
+    }
+
+    //double the capacity of the array,
+    public void doubleCapacity(){
+        PeopleRecord[] temp = heap;
+
+        heap = new PeopleRecord[capacity*2]; // new array with bigger capacity
+        //get the values back
+        for (int i = 0; i < temp.length; i++) {
+            heap[i] = temp[i];
         }
     }
 
-    public MyHeap() {
-        heap = new ArrayList<>();
-    }
 
     // Insert a new record into the heap
     public void insert(PeopleRecord record) {
-        Node newNode = new Node(record);
-        heap.add(newNode);
-        heapifyUp(heap.size() - 1);
+        while (size >= capacity) {
+            doubleCapacity();
+        }
+        heap[size] = record;
+        heapify(size, true); // Heapify up for the new element
+        size++;
     }
 
-    // Heapify up to maintain heap properties
-    private void heapifyUp(int index) {
-        int parentIndex = (index - 1) / 2; //3
-        while (index > 0 && heap.get(index).data.compareTo(heap.get(parentIndex).data) > 0) {
-            swap(index, parentIndex);
-            index = parentIndex;
-            parentIndex = (index - 1) / 2;
+    // Remove and return the maximum element from the heap
+    public PeopleRecord removeMax() {
+        if (size == 0) {
+            return null;
+        }
+        PeopleRecord max = heap[0];
+        heap[0] = heap[size - 1]; // Replace root with the last element
+        size--;
+        heapify(0, false); // Heapify down from the root
+        return max;
+    }
+    //in case you want to remove some elements
+    public PeopleRecord remove(int index) {
+        if (size == 0) {
+            return null;
+        }
+        PeopleRecord removed = heap[index];
+        heap[index] = heap[size - 1];
+        size--;
+        heapify(index, false);
+        return removed;
+    }
+    //heapify to maintain heap properties
+    private void heapify(int index, boolean isUp) {
+        if (isUp) {
+            // Heapify up, used when we insert node from bottow to up
+            int parentIndex = (index - 1) / 2;
+            while (index > 0 && heap[index].compareTo(heap[parentIndex]) > 0) {
+                swap(index, parentIndex);
+                index = parentIndex;
+                parentIndex = (index - 1) / 2;
+            }
+        } else {
+            // Heapify down, used when removing some element to maintain the heap property
+            while (true) {
+                int leftChild = 2 * index + 1;
+                int rightChild = 2 * index + 2;
+                int largest = index;
+
+                if (leftChild < size && heap[leftChild].compareTo(heap[largest]) > 0) {
+                    largest = leftChild;
+                }
+                if (rightChild < size && heap[rightChild].compareTo(heap[largest]) > 0) {
+                    largest = rightChild;
+                }
+                if (largest == index) {
+                    break;
+                }
+                swap(index, largest);
+                index = largest;
+            }
         }
     }
 
     // Swap two elements in the heap
     private void swap(int index1, int index2) {
-        Node temp = heap.get(index1);
-        heap.set(index1, heap.get(index2));
-        heap.set(index2, temp);
-    }
-
-    // Remove and return the maximum element from the heap
-    public PeopleRecord removeMax() {
-        if (heap.isEmpty()) return null;
-        Node maxNode = heap.get(0);
-        Node lastNode = heap.remove(heap.size() - 1);
-        if (!heap.isEmpty()) {
-            heap.set(0, lastNode);
-            heapifyDown(0);
-        }
-        return maxNode.data;
-    }
-
-    // Heapify down to maintain heap properties
-    private void heapifyDown(int index) {
-        int leftChild = 2 * index + 1;
-        int rightChild = 2 * index + 2;
-        int largest = index;
-
-        if (leftChild < heap.size() && heap.get(leftChild).data.compareTo(heap.get(largest).data) > 0) {
-            largest = leftChild;
-        }
-
-        if (rightChild < heap.size() && heap.get(rightChild).data.compareTo(heap.get(largest).data) > 0) {
-            largest = rightChild;
-        }
-
-        if (largest != index) {
-            swap(index, largest);
-            heapifyDown(largest);
-        }
+        PeopleRecord temp = heap[index1];
+        heap[index1] = heap[index2];
+        heap[index2] = temp;
     }
 
     // Perform heap sort and return sorted list of PeopleRecord
-    public ArrayList<PeopleRecord> heapSort() {
-        ArrayList<PeopleRecord> sortedList = new ArrayList<>();
-        ArrayList<Node> originalHeap = new ArrayList<>(heap); //get a temporary list for heap, cause we will remove each Node, place it to sortedList and then restore
-        while (!heap.isEmpty()) {
-            sortedList.add(removeMax());
+    public PeopleRecord[] heapSort() {
+        PeopleRecord[] sortedArray = new PeopleRecord[size];
+        int originalSize = size;
+
+        for (int i = 0; i < originalSize; i++) {
+            sortedArray[i] = removeMax();
         }
 
-        heap = originalHeap; // Restore original heap from the temporary variable
-        return sortedList;
+        size = originalSize; // Restore the original size after sorting
+        return sortedArray;
     }
 
     // Get number of nodes and height of the heap
     public String getInfo() {
-        int nodeCount = heap.size();
-        int height = (int) Math.ceil(Math.log(nodeCount + 1) / Math.log(2)) - 1;
-        return "Number of nodes: " + nodeCount + ", Height: " + height;
+        int height = (int) Math.ceil(Math.log(size + 1) / Math.log(2)) - 1;
+        return "Number of nodes: " + size + ", Height: " + height;
     }
 
     // Function to draw the heap as a tree
     public void drawHeap() {
         JFrame frame = new JFrame("Heap Visualization");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setSize(800, 600);
 
         JPanel panel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                if (!heap.isEmpty()) {
+                if (size > 0) {
                     drawNode(g, 0, getWidth() / 2, 50, getWidth() / 4);
                 }
             }
@@ -113,7 +139,7 @@ class MyHeap {
         scrollPanel.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
         // Dynamically set the panel size based on heap size
-        int depth = (int) Math.ceil(Math.log(heap.size() + 1) / Math.log(2));
+        int depth = (int) Math.ceil(Math.log(size + 1) / Math.log(2));
         int width = Math.max((int) Math.pow(2, depth) * 50, 800);
         int height = depth * 100;
         panel.setPreferredSize(new Dimension(width, height));
@@ -124,17 +150,17 @@ class MyHeap {
 
     // Recursive function to draw nodes and edges
     private void drawNode(Graphics g, int index, int x, int y, int xOffset) {
-        if (index >= heap.size()) return;
+        if (index >= size) return;
 
         // Draw current node
         g.setColor(Color.BLUE);
         g.fillOval(x - 15, y - 15, 30, 30);
         g.setColor(Color.BLACK);
-        g.drawString(heap.get(index).data.getGivenName() + " " + heap.get(index).data.getFamilyName(), x - 30, y - 20);
+        g.drawString(heap[index].getGivenName() + " " + heap[index].getFamilyName(), x - 30, y - 20);
 
         // Draw left child
         int leftChildIndex = 2 * index + 1;
-        if (leftChildIndex < heap.size()) {
+        if (leftChildIndex < size) {
             g.setColor(Color.BLACK);
             g.drawLine(x, y, x - xOffset, y + 50);
             drawNode(g, leftChildIndex, x - xOffset, y + 50, xOffset / 2);
@@ -142,7 +168,7 @@ class MyHeap {
 
         // Draw right child
         int rightChildIndex = 2 * index + 2;
-        if (rightChildIndex < heap.size()) {
+        if (rightChildIndex < size) {
             g.setColor(Color.BLACK);
             g.drawLine(x, y, x + xOffset, y + 50);
             drawNode(g, rightChildIndex, x + xOffset, y + 50, xOffset / 2);
@@ -151,8 +177,8 @@ class MyHeap {
 
     // Print the heap as an array (for debugging)
     public void printHeap() {
-        for (Node node : heap) {
-            System.out.println(node.data.getGivenName() + " " + node.data.getFamilyName());
+        for (int i = 0; i < size; i++) {
+            System.out.println(heap[i].getGivenName() + " " + heap[i].getFamilyName());
         }
     }
 }

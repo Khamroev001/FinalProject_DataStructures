@@ -74,14 +74,23 @@ public class PeopleRecord implements Comparable<PeopleRecord> {
     public String getBirthday() {
         return birthday;
     }
-
+    //here we first compare givenName and if they are same then compare family name
     @Override
     public int compareTo(PeopleRecord o) {
         if (this.getGivenName().compareTo(o.getGivenName())>0){
             return 1;
         }
+
         else if (this.getGivenName().compareTo(o.getGivenName())<0){
             return -1;
+        }
+        else {
+            if (this.getFamilyName().compareTo(o.getFamilyName())>0){
+                return 1;
+            }
+            else if (this.getFamilyName().compareTo(o.getFamilyName())<0){
+                return -1;
+            }
         }
         return 0;
     }

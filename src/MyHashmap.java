@@ -1,4 +1,8 @@
-class MyHashmap<K, V> {
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+public class MyHashmap<K, V> {
     private static final int INITIAL_CAPACITY = 16;
     private static final double LOAD_FACTOR = 0.5;
 
@@ -45,6 +49,36 @@ class MyHashmap<K, V> {
         return table[index].value;
     }
 
+    public V getOrDefault(K key, V defaultValue) {
+        V value = get(key);
+        return (value == null) ? defaultValue : value;
+    }
+
+    public List<Map.Entry<K, V>> entrySet() {
+        List<Map.Entry<K, V>> entries = new ArrayList<>();
+        for (Entry<K, V> entry : table) {
+            if (entry != null) {
+                entries.add(new Map.Entry<K, V>() {
+                    @Override
+                    public K getKey() {
+                        return entry.key;
+                    }
+
+                    @Override
+                    public V getValue() {
+                        return entry.value;
+                    }
+
+                    @Override
+                    public V setValue(V value) {
+                        throw new UnsupportedOperationException("setValue not supported");
+                    }
+                });
+            }
+        }
+        return entries;
+    }
+
     public boolean delete(K key) {
         int index = findSlot(key, true);
         if (index == -1 || table[index] == null) {
@@ -59,6 +93,7 @@ class MyHashmap<K, V> {
         return true;
     }
 
+
     private int findSlot(K key, boolean forSearch) {
         int hash = Math.abs(key.hashCode());
         int index = hash % table.length;
@@ -70,6 +105,7 @@ class MyHashmap<K, V> {
             } else if (!forSearch && (table[index].key == null || table[index].key.equals(key))) {
                 return index;
             }
+            //solve the problem with collisions
             index = (index + step * step) % table.length;
             step++;
         }
@@ -90,6 +126,7 @@ class MyHashmap<K, V> {
         }
     }
 
+
     private void rehash() {
         Entry<K, V>[] oldTable = table;
         table = new Entry[table.length];
@@ -102,7 +139,7 @@ class MyHashmap<K, V> {
         }
     }
 
-    public int size() {
+    public int getSize() {
         return size;
     }
 

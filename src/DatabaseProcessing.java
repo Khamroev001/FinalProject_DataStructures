@@ -12,7 +12,7 @@ public class DatabaseProcessing {
     // Path to the file, you may change it on different PC
     final String fileName = "src\\people.txt";
     MyBST myBST= new MyBST();
-    MyHeap myHeap= new MyHeap(500);
+    MyHeap myHeap= new MyHeap();
 
     public MyBST getMyBST() {
         return myBST;
@@ -62,7 +62,7 @@ public class DatabaseProcessing {
     }
 
     //call the heapsort
-    public PeopleRecord[] sort(){
+    public ArrayList<PeopleRecord> sort(){
         BSTtoHeap(myBST.getRoot(),myHeap);
         return myHeap.heapSort();
     }

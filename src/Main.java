@@ -8,7 +8,7 @@ import java.util.*;
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
     public static void main(String[] args) {
-        PeopleRecord[] sorted;
+        ArrayList<PeopleRecord> sorted;
         List<Map.Entry<String, Integer>> mostfrequent;
         DatabaseProcessing databaseProcessor = new DatabaseProcessing();
         databaseProcessor.loadData();
@@ -29,7 +29,7 @@ public class Main {
         }
         System.out.println("Sorted ArrayList");
 
-        System.out.println(Arrays.toString(sorted));
+        sorted.forEach(System.out::println);
 
     }
 }

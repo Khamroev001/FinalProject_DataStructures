@@ -2,7 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 
 class MyBST {
-    private class Node {
+    public class Node {
         PeopleRecord data;
         Node left, right;
 
@@ -14,6 +14,9 @@ class MyBST {
 
     private Node root;
 
+    public Node getRoot(){
+        return root;
+    }
     public void insert(PeopleRecord record) {
         root = insertRec(root, record);
     }

@@ -32,7 +32,5 @@ public class Main {
         heap.drawHeap();
         records.drawTree();
 //      records.inorderTraversal();
-        
-
     }
 }

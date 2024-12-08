@@ -3,7 +3,15 @@ import java.awt.*;
 import java.util.ArrayList;
 
 class MyHeap {
-    private ArrayList<PeopleRecord> heap;
+    private ArrayList<Node> heap;
+
+    private class Node {
+        PeopleRecord data;
+
+        Node(PeopleRecord data) {
+            this.data = data;
+        }
+    }
 
     public MyHeap() {
         heap = new ArrayList<>();
@@ -11,14 +19,15 @@ class MyHeap {
 
     // Insert a new record into the heap
     public void insert(PeopleRecord record) {
-        heap.add(record);
+        Node newNode = new Node(record);
+        heap.add(newNode);
         heapifyUp(heap.size() - 1);
     }
 
     // Heapify up to maintain heap properties
     private void heapifyUp(int index) {
-        int parentIndex = (index - 1) / 2;
-        while (index > 0 && heap.get(index).compareTo(heap.get(parentIndex)) > 0) {
+        int parentIndex = (index - 1) / 2; //3
+        while (index > 0 && heap.get(index).data.compareTo(heap.get(parentIndex).data) > 0) {
             swap(index, parentIndex);
             index = parentIndex;
             parentIndex = (index - 1) / 2;
@@ -27,9 +36,53 @@ class MyHeap {
 
     // Swap two elements in the heap
     private void swap(int index1, int index2) {
-        PeopleRecord temp = heap.get(index1);
+        Node temp = heap.get(index1);
         heap.set(index1, heap.get(index2));
         heap.set(index2, temp);
+    }
+
+    // Remove and return the maximum element from the heap
+    public PeopleRecord removeMax() {
+        if (heap.isEmpty()) return null;
+        Node maxNode = heap.get(0);
+        Node lastNode = heap.remove(heap.size() - 1);
+        if (!heap.isEmpty()) {
+            heap.set(0, lastNode);
+            heapifyDown(0);
+        }
+        return maxNode.data;
+    }
+
+    // Heapify down to maintain heap properties
+    private void heapifyDown(int index) {
+        int leftChild = 2 * index + 1;
+        int rightChild = 2 * index + 2;
+        int largest = index;
+
+        if (leftChild < heap.size() && heap.get(leftChild).data.compareTo(heap.get(largest).data) > 0) {
+            largest = leftChild;
+        }
+
+        if (rightChild < heap.size() && heap.get(rightChild).data.compareTo(heap.get(largest).data) > 0) {
+            largest = rightChild;
+        }
+
+        if (largest != index) {
+            swap(index, largest);
+            heapifyDown(largest);
+        }
+    }
+
+    // Perform heap sort and return sorted list of PeopleRecord
+    public ArrayList<PeopleRecord> heapSort() {
+        ArrayList<PeopleRecord> sortedList = new ArrayList<>();
+        ArrayList<Node> originalHeap = new ArrayList<>(heap); //get a temporary list for heap, cause we will remove each Node, place it to sortedList and then restore
+        while (!heap.isEmpty()) {
+            sortedList.add(removeMax());
+        }
+
+        heap = originalHeap; // Restore original heap from the temporary variable
+        return sortedList;
     }
 
     // Get number of nodes and height of the heap
@@ -77,7 +130,7 @@ class MyHeap {
         g.setColor(Color.BLUE);
         g.fillOval(x - 15, y - 15, 30, 30);
         g.setColor(Color.BLACK);
-        g.drawString(heap.get(index).getGivenName() + " " + heap.get(index).getFamilyName(), x - 30, y - 20);
+        g.drawString(heap.get(index).data.getGivenName() + " " + heap.get(index).data.getFamilyName(), x - 30, y - 20);
 
         // Draw left child
         int leftChildIndex = 2 * index + 1;
@@ -98,8 +151,8 @@ class MyHeap {
 
     // Print the heap as an array (for debugging)
     public void printHeap() {
-        for (PeopleRecord record : heap) {
-            System.out.println(record.getGivenName() + " " + record.getFamilyName());
+        for (Node node : heap) {
+            System.out.println(node.data.getGivenName() + " " + node.data.getFamilyName());
         }
     }
 }

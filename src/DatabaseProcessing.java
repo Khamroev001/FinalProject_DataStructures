@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 public class DatabaseProcessing {
 
     // Path to the file, you may change it on different PC
-    final String fileName = "C:\\Users\\satto\\IdeaProjects\\FinalProject_DataStructures\\src\\people.txt";
+    final String fileName = "src\\people.txt";
     MyBST myBST= new MyBST();
     MyHeap myHeap= new MyHeap(500);
 
@@ -42,7 +42,6 @@ public class DatabaseProcessing {
                 // Create a PeopleRecord object for each line
                 PeopleRecord record = new PeopleRecord(line);
                 myBST.insert(record);
-                // You can also insert the record into BST, Heap, or Hashmap here
             }
         } catch (
                 IOException e) {
@@ -80,7 +79,7 @@ public class DatabaseProcessing {
             Pattern pattern = Pattern.compile("[a-zA-Z]{3,}"); // Matches words with 3 or more letters
 
             while ((line = br.readLine()) != null) {
-                // Extract the required fields (assuming fields are separated by ';')
+                // Extract the required fields  separated by ';'
                 String[] fields = line.split(";");
                 for (int i = 0; i <= 6; i++) { // Process the first 7 fields
                     if (i < fields.length) { // Ensure the field exists

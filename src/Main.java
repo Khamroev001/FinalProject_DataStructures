@@ -8,7 +8,6 @@ import java.util.*;
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
     public static void main(String[] args) {
-
         PeopleRecord[] sorted;
         List<Map.Entry<String, Integer>> mostfrequent;
         DatabaseProcessing databaseProcessor = new DatabaseProcessing();
@@ -16,6 +15,9 @@ public class Main {
         databaseProcessor.visualizeBST();
         sorted=databaseProcessor.sort();
         databaseProcessor.visualizeHeap();
+        System.out.println(databaseProcessor.getInfoBST());
+        System.out.println(databaseProcessor.getInfoHeap());
+
         try {
             mostfrequent=databaseProcessor.getMostFrequentWords(10,4);
         } catch (Exception e) {
